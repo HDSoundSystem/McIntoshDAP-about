@@ -153,16 +153,7 @@
 <div class="divider"></div>
 
 <div class="layout">
-  <nav class="toc-sticky">
-    <a href="#overview">Overview</a>
-    <a href="#features">Features</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#installation">Installation</a>
-    <a href="#configuration">Configuration</a>
-    <a href="#contributing">Contributing</a>
-    <a href="#license">License</a>
-    <a href="#credits">Credits</a>
-  </nav>
+  <nav class="toc-sticky" id="toc"></nav>
 
   <div class="main-content">
     <div class="md-content">
@@ -194,11 +185,33 @@
     obs.observe(el);
   });
 
-  // Ancres automatiques sur les titres H2
+  // Générer les ancres ET le menu automatiquement depuis les vrais titres H2
+  const toc = document.getElementById('toc');
   document.querySelectorAll('.md-h2').forEach(h => {
+    // Générer l'ID depuis le texte du titre
     const id = h.textContent.trim().toLowerCase()
       .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     h.id = id;
+
+    // Ajouter le lien dans le menu
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.textContent = h.textContent.trim().replace(/^[^\w]+/, '').trim();
+    toc.appendChild(a);
+  });
+
+  // Highlight du lien actif au scroll
+  const tocLinks = toc.querySelectorAll('a');
+  const headings = document.querySelectorAll('.md-h2');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    headings.forEach(h => {
+      if (window.scrollY >= h.offsetTop - 120) current = h.id;
+    });
+    tocLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--gold)' : '';
+      a.style.borderRightColor = a.getAttribute('href') === '#' + current ? 'var(--gold)' : 'transparent';
+    });
   });
 </script>
 </body>
