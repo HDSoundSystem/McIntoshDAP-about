@@ -13,10 +13,9 @@ from pathlib import Path
 ROOT     = Path(__file__).parent          # Racine du repo
 README   = ROOT / "README.md"
 TEMPLATE = ROOT / "template.html"
-DIST     = ROOT / "dist"
-OUTPUT   = DIST / "about.html"
-
-DIST.mkdir(exist_ok=True)
+DIST     = ROOT / "dist" / "about"
+DIST.mkdir(parents=True, exist_ok=True)
+OUTPUT   = DIST / "index.html"
 
 # ── Lecture du README ─────────────────────────────────────────────────────────
 raw = README.read_text(encoding="utf-8")
