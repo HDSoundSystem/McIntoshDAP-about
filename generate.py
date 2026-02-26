@@ -29,7 +29,7 @@ images = []
 for line in lines:
     for m in IMG_PATTERN.finditer(line):
         url = m.group(1) or m.group(2)
-        if url and url.startswith("http"):
+        if url and url.startswith("http") and "shields.io" not in url:
             images.append(url)
 
 # Dédupliquer en gardant l'ordre
