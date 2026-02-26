@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McIntosh Reference Digital Audio Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c8a951;
+    --gold-dim: rgba(200,169,81,0.25);
+    --blue: #00c3ff;
+    --blue-dim: rgba(0,195,255,0.15);
+    --green: #00e676;
+    --bg: #000;
+    --bg2: #080808;
+    --bg3: #0e0e0e;
+    --text: #e8e0d0;
+    --text-dim: rgba(232,224,208,0.45);
+    --mono: 'Inconsolata', monospace;
+    --serif: 'Playfair Display', serif;
+    --light-serif: 'Cormorant Garamond', serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--mono); font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+
+  /* BANNER */
+  .hero-banner { width: 100%; max-height: 260px; overflow: hidden; position: relative; }
+  .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.7) contrast(1.1); }
+  .hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%); }
+
+  /* HERO */
+  .hero { text-align: center; padding: 60px 24px 80px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(32px, 6vw, 68px); font-weight: 700; line-height: 1.1; color: #fff; opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards; }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero-sub { font-family: var(--light-serif); font-size: clamp(14px, 2vw, 18px); font-style: italic; color: var(--text-dim); max-width: 600px; margin: 20px auto 0; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; }
+  .badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards; font-size: 0; }
+  .badge { font-size: 10px; font-family: var(--mono); letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; border: 1px solid; border-radius: 2px; line-height: 1.4; display: inline-block; }
+  .badge-green { border-color: var(--green); color: var(--green); }
+  .badge-blue  { border-color: var(--blue);  color: var(--blue);  }
+  .badge-gold  { border-color: var(--gold);  color: var(--gold);  }
+
+  /* DIVIDER */
+  .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.4; }
+
+  /* SCREENSHOTS */
+  .screenshots { padding: 60px 24px; display: flex; flex-direction: column; gap: 16px; max-width: 1200px; margin: 0 auto; }
+  .ss-full img, .screenshots img { width: 100%; border-radius: 4px; border: 1px solid var(--gold-dim); display: block; filter: brightness(0.92); transition: border-color 0.3s, filter 0.3s; }
+  .ss-full img:hover, .screenshots img:hover { border-color: var(--gold); filter: brightness(1); }
+  .ss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 180px 1fr; max-width: 1100px; margin: 0 auto; }
+  .toc-sticky { position: sticky; top: 60px; height: max-content; padding: 40px 0; border-right: 1px solid var(--gold-dim); }
+  .toc-sticky a { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); text-decoration: none; padding: 7px 20px 7px 0; border-right: 2px solid transparent; margin-right: -1px; transition: all 0.2s; }
+  .toc-sticky a:hover { color: var(--gold); border-right-color: var(--gold); }
+  .main-content { padding: 0 0 0 60px; }
+
+  /* SECTION */
+  .section { max-width: 860px; margin: 0 auto; padding: 80px 24px; }
+
+  /* MARKDOWN CONTENT STYLES */
+  .md-content { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .md-h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 400;
+    color: #fff;
+    margin: 60px 0 20px;
+    line-height: 1.2;
+    padding-top: 40px;
+    border-top: 1px solid var(--gold-dim);
+  }
+  .md-h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+  .md-h4 { font-family: var(--mono); font-size: 12px; letter-spacing: 1px; color: var(--blue); margin: 24px 0 10px; }
+  .md-p { color: var(--text-dim); margin-bottom: 16px; font-size: 14px; }
+  .md-ul, .md-ol { list-style: none; margin: 0 0 20px; display: flex; flex-direction: column; gap: 6px; }
+  .md-li { font-size: 13px; color: var(--text-dim); padding-left: 18px; position: relative; }
+  .md-ul .md-li::before { content: '—'; position: absolute; left: 0; color: var(--gold); opacity: 0.6; }
+  .md-ol { counter-reset: ol; }
+  .md-ol .md-li { counter-increment: ol; }
+  .md-ol .md-li::before { content: counter(ol, decimal-leading-zero); position: absolute; left: 0; font-size: 10px; color: var(--gold); }
+  .md-pre { background: var(--bg3); border: 1px solid var(--gold-dim); border-left: 3px solid var(--gold); padding: 20px 24px; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--blue); overflow-x: auto; margin: 20px 0; border-radius: 2px; }
+  .md-blockquote { border-left: 3px solid var(--gold); padding: 12px 20px; background: rgba(200,169,81,0.04); margin: 20px 0; color: var(--text-dim); font-style: italic; }
+  .md-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .md-table th { background: rgba(200,169,81,0.08); color: var(--gold); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px; border: 1px solid var(--gold-dim); text-align: left; }
+  .md-table td { padding: 10px 14px; border: 1px solid var(--gold-dim); color: var(--text-dim); }
+  .md-table tr:hover td { background: rgba(200,169,81,0.03); }
+  code { font-family: var(--mono); font-size: 12px; color: var(--blue); background: var(--blue-dim); padding: 2px 6px; border-radius: 2px; }
+  pre code { background: none; padding: 0; color: inherit; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { color: var(--gold); }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--gold); }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 60px 24px 80px; }
+  footer::before { content: ''; display: block; width: 60px; height: 1px; background: var(--gold); margin: 0 auto 32px; opacity: 0.5; }
+  .footer-logo { font-family: var(--serif); font-size: 28px; font-style: italic; color: var(--gold); margin-bottom: 12px; }
+  .footer-tagline { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .toc-sticky { display: none; }
+    .main-content { padding: 0; }
+    .ss-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero-banner">
+  <img src="https://github.com/user-attachments/assets/87ed49b7-9437-4980-9dc6-4206d0007214" alt="McIntosh DAP Banner">
+</div>
+
+<section class="hero">
+  <p class="hero-eyebrow">Fan-made Tribute Project · Open Source</p>
+  <h1>McIntosh Reference Digital Audio Player</h1>
+  <p class="hero-sub">Inspired by the high-end McIntosh MSA5500 2-Channel Streaming Integrated Amplifier and DS200 STREAMING DAC</p>
+  <div class="badges">
+    <span class="badge badge-green">STATUS: ACTIVE</span>
+<span class="badge badge-green">LICENSE: MIT</span>
+<span class="badge badge-blue">VERSION: 2.7.0</span>
+
+  </div>
+</section>
+
+<div class="screenshots">
+  <div class="ss-full"><img src="https://github.com/user-attachments/assets/7bc36eb4-3abf-4167-862a-a5e87df7afc9" alt="Screenshot" loading="lazy"></div>
+<div class="ss-full"><img src="https://github.com/user-attachments/assets/56657905-2c0c-4000-bf1b-cb6dc99d8487" alt="Screenshot" loading="lazy"></div>
+<div class="ss-grid">
+  <img src="https://github.com/user-attachments/assets/5b2af81d-74c3-42ec-b4aa-00438337031c" alt="Screenshot" loading="lazy">
+  <img src="https://github.com/user-attachments/assets/c48f3d1b-df9c-40ee-85ea-b93c6fdf1810" alt="Screenshot" loading="lazy">
+  <img src="https://github.com/user-attachments/assets/d645f342-0e80-499e-b0c6-1b909908c2ac" alt="Screenshot" loading="lazy">
+  <img src="https://github.com/user-attachments/assets/5c669071-003f-4079-bea6-52ba8fe5849e" alt="Screenshot" loading="lazy">
+  <img src="https://github.com/user-attachments/assets/ea9d72a4-a6ea-4425-9a36-82488dc2f1ae" alt="Screenshot" loading="lazy">
+</div>
+
+</div>
+
+<div class="divider"></div>
+
+<div class="layout">
+  <nav class="toc-sticky">
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#installation">Installation</a>
+    <a href="#configuration">Configuration</a>
+    <a href="#contributing">Contributing</a>
+    <a href="#license">License</a>
+    <a href="#credits">Credits</a>
+  </nav>
+
+  <div class="main-content">
+    <div class="md-content">
+      <p class="md-p">A premium web-based audio player inspired by the legendary McIntosh amplifier design, featuring authentic VU meters, professional 10-band equalizer with dedicated rotary knob, stereo balance with precision control and mandatory center snap, A-B loop functionality, mono mode, loudness compensation, power guard protection, customizable visual themes, and a stunning interface that captures the essence of high-end audio equipment.</p>
+<hr />
+<h2 id="table-of-contents">📑 Table of Contents</h2>
+<ul class="md-ul">
+<li class="md-li"><a href="#-overview">Overview</a></li>
+<li class="md-li"><a href="#-core-features">Core Features</a></li>
+<li class="md-li"><a href="#-audio-playback">Audio Playback</a></li>
+<li class="md-li"><a href="#-visual-interface">Visual Interface</a></li>
+<li class="md-li"><a href="#-audio-controls">Audio Controls</a></li>
+<li class="md-li"><a href="#-advanced-features">Advanced Features</a></li>
+<li class="md-li"><a href="#-technical-architecture">Technical Architecture</a></li>
+<li class="md-li"><a href="#technology-stack">Technology Stack</a></li>
+<li class="md-li"><a href="#project-structure">Project Structure</a></li>
+<li class="md-li"><a href="#audio-architecture">Audio Architecture</a></li>
+<li class="md-li"><a href="#modular-components">Modular Components</a></li>
+<li class="md-li"><a href="#-installation-and-usage">Installation and Usage</a></li>
+<li class="md-li"><a href="#-configuration">Configuration</a></li>
+<li class="md-li"><a href="#-contributing">Contributing</a></li>
+<li class="md-li"><a href="#-license">License</a></li>
+<li class="md-li"><a href="#-disclaimer">Disclaimer</a></li>
+<li class="md-li"><a href="#-credits">Credits</a></li>
+</ul>
+<hr />
+<h2 id="overview">🎯 Overview</h2>
+<p class="md-p">The <strong>McIntosh DAP</strong> is a premium web-based audio application that recreates the experience of using an authentic McIntosh amplifier. It combines modern web technologies with iconic vintage design to deliver an immersive and visually stunning listening experience.</p>
+<h3 id="key-highlights">Key Highlights</h3>
+<ul class="md-ul">
+<li class="md-li"><strong>Authentic Interface</strong>: Faithful design to McIntosh amplifiers with animated VU meters and VFD display</li>
+<li class="md-li"><strong>Professional Audio Processing</strong>: 10-band equalizer with rotary knob, tone controls, precision stereo balance</li>
+<li class="md-li"><strong>Multi-platform</strong>: Web app (PWA) and desktop application (Electron)</li>
+<li class="md-li"><strong>Multiple Audio Formats</strong>: FLAC, MP3, WAV, MP4/M4A, AAC, ALAC, OGG support</li>
+<li class="md-li"><strong>Real-time Visualization</strong>: VU meters with realistic physics and spectrum analyzer</li>
+</ul>
+<hr />
+<h2 id="core-features">✨ Core Features</h2>
+<h3 id="audio-playback">🎵 Audio Playback</h3>
+<h4 id="multi-format-support">Multi-format Support</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Supported Formats</strong>: FLAC, MP3, MP4/M4A, WAV, AAC, ALAC, OGG</li>
+<li class="md-li"><strong>Quality</strong>: High-resolution audio support with complete metadata</li>
+<li class="md-li"><strong>Automatic Analysis</strong>: Bitrate, format, and ID3 metadata extraction</li>
+</ul>
+<h4 id="playlist-management">Playlist Management</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Multiple Loading Methods</strong>:</li>
+<li class="md-li"><strong>INPUT knob</strong>: Individual file selection (multiple selection supported)</li>
+<li class="md-li"><strong>LIBRARY button</strong>: Complete folder loading with organized navigation</li>
+<li class="md-li"><strong>Drag &amp; Drop</strong>: Drag audio files directly onto the interface<ul class="md-ul">
+<li class="md-li">Works in browser and Electron desktop version</li>
+<li class="md-li">Files are <strong>added</strong> to the existing playlist (not replaced)</li>
+<li class="md-li">If playlist is empty, playback starts automatically</li>
+<li class="md-li">VFD displays <code>+N FILE(S) ADDED</code> confirmation</li>
+<li class="md-li">Supported formats: FLAC, MP3, MP4, WAV, M4A, AAC, OGG</li>
+</ul>
+</li>
+<li class="md-li"><strong>Playlist Interface</strong>:</li>
+<li class="md-li">Interactive popup - click track counter to browse</li>
+<li class="md-li">Visual indicator for currently playing track</li>
+<li class="md-li">Library modal with organized file list</li>
+</ul>
+<h4 id="playback-controls">Playback Controls</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Basic Controls</strong>: Play, Pause, Stop, Previous, Next</li>
+<li class="md-li"><strong>Fast Seek</strong>: Press and hold previous/next buttons for quick navigation</li>
+<li class="md-li">500ms hold delay to prevent accidental jumps</li>
+<li class="md-li">3-second jumps every 100ms while holding</li>
+<li class="md-li"><strong>Repeat Modes</strong>:</li>
+<li class="md-li"><strong>Off</strong>: Normal playback</li>
+<li class="md-li"><strong>REPEAT(1)</strong>: Repeat single track</li>
+<li class="md-li"><strong>REPEAT(ALL)</strong>: Repeat all tracks</li>
+<li class="md-li"><strong>Random Playback</strong>: Shuffle mode with intelligent selection (avoids immediate repeats)</li>
+</ul>
+<h4 id="a-b-loop">A-B Loop</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>First click</strong>: Set point A</li>
+<li class="md-li"><strong>Second click</strong>: Set point B and activate loop</li>
+<li class="md-li"><strong>Third click</strong>: Disable loop</li>
+<li class="md-li"><strong>Automatic validation</strong>: B must be after A</li>
+<li class="md-li"><strong>Visual indicator</strong>: "A-B" in VFD display</li>
+</ul>
+<h4 id="system-integration">System Integration</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Media Session API</strong>: Control from keyboard media keys</li>
+<li class="md-li"><strong>Native Controls</strong>: Browser media controls support</li>
+<li class="md-li"><strong>Position Tracking</strong>: Position state for Chrome/Edge</li>
+<li class="md-li"><strong>Progressive Web App</strong>: Installation with service worker for offline cache</li>
+<li class="md-li"><strong>Desktop Application</strong>: Electron version with complete system integration</li>
+</ul>
+<h3 id="visual-interface">📺 Visual Interface</h3>
+<h4 id="animated-stereo-vu-meters">Animated Stereo VU Meters</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Real-time Visualization</strong>: Dual-channel audio analysis</li>
+<li class="md-li"><strong>Smooth Animation</strong>: Realistic physics with 25% smoothing</li>
+<li class="md-li"><strong>Authentic Design</strong>: Custom McIntosh-style meter background image</li>
+<li class="md-li"><strong>Response Curve</strong>: Power-law for natural meter movement</li>
+<li class="md-li"><strong>Auto Return</strong>: Rest position when stopped</li>
+<li class="md-li"><strong>Alternate Mode</strong>: Alternative meter background available (meter-alt-bg)</li>
+</ul>
+<h4 id="vfd-display-vacuum-fluorescent-display">VFD Display (Vacuum Fluorescent Display)</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Track Information</strong>:</li>
+<li class="md-li">Title with dynamic text sizing (auto-fit content)</li>
+<li class="md-li">Artist and album information</li>
+<li class="md-li">Track number and total (clickable for playlist)</li>
+<li class="md-li"><strong>Technical Information</strong>:</li>
+<li class="md-li">File format indicator (FLAC, MP3, WAV, MP4, AAC/ALAC, OGG)</li>
+<li class="md-li">Bitrate calculation (estimated for VBR files)</li>
+<li class="md-li">Playback time with elapsed/remaining toggle (clickable)</li>
+<li class="md-li"><strong>Status Indicators</strong>:</li>
+<li class="md-li">Playback status icons (PLAY, PAUSE with blinking, STOP)</li>
+<li class="md-li">Mode indicators (RANDOM, REPEAT, REPEAT(1), REPEAT(ALL), A-B LOOP) in bottom left</li>
+<li class="md-li">Loudness indicator when active</li>
+<li class="md-li">Volume display overlay (auto-hides after 2 seconds)</li>
+<li class="md-li">EQ preset indicator: <code>| EQ ROCK</code>, <code>| EQ JAZZ</code>, <code>| EQ CUSTOM</code>, etc. — displayed when any non-flat EQ is active</li>
+</ul>
+<h4 id="display-modes">Display Modes</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Normal Mode</strong>: Full illumination</li>
+<li class="md-li"><strong>Alternate Logo</strong>: Toggle between mc-logo.png and mc-logo-off.png</li>
+<li class="md-li"><strong>Alternate VU Backgrounds</strong>: Different meter designs</li>
+<li class="md-li"><strong>VFD Blackout Mode</strong>: Complete display shutdown</li>
+<li class="md-li"><strong>Label Dimming</strong>: All green labels turn gray when display is off</li>
+</ul>
+<h4 id="interactive-elements">Interactive Elements</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Album Art Viewer</strong>: Click track title to view embedded artwork in popup</li>
+<li class="md-li"><strong>Interactive Playlist</strong>: Click track counter to browse and select tracks</li>
+<li class="md-li"><strong>Status LEDs</strong>:</li>
+<li class="md-li">Power LED (red) - indicates system on/off state</li>
+<li class="md-li">MONO LED (green) - active when mono mode enabled</li>
+<li class="md-li">POWER GUARD LEDs (red, left and right) - blink rapidly when volume ≥ 90%</li>
+</ul>
+<h4 id="visual-customization">Visual Customization</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Background Color Picker</strong>: Customize app background</li>
+<li class="md-li"><strong>Shadow Color Picker</strong>: Adjust chassis shadow color</li>
+<li class="md-li"><strong>Real-time Preview</strong>: Color preview in buttons</li>
+<li class="md-li"><strong>Persistence</strong>: Saved across sessions</li>
+<li class="md-li"><strong>Reboot Confirmation Modal</strong>: Safety popup to confirm system restart</li>
+</ul>
+<h3 id="audio-controls">🎛️ Audio Controls</h3>
+<h4 id="volume-control">Volume Control</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Interactive Rotary Knob</strong>:</li>
+<li class="md-li">Metallic chrome finish</li>
+<li class="md-li">Click and hold left/right for continuous adjustment (0.01 steps at 50ms intervals)</li>
+<li class="md-li">Mouse wheel support for precise control (0.05 steps)</li>
+<li class="md-li">Visual feedback with rotation animation (270° range)</li>
+<li class="md-li"><strong>Temporary Display</strong>: Overlay auto-hides after 2 seconds</li>
+<li class="md-li"><strong>Hover Info</strong>: Shows current volume level</li>
+<li class="md-li"><strong>Loudness Integration</strong>: Automatic compensation</li>
+<li class="md-li"><strong>Layout</strong>: ADJUST label displayed directly below the knob</li>
+</ul>
+<h4 id="mute-function">Mute Function</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Instant Muting</strong>: Audio mute with status display</li>
+<li class="md-li"><strong>Visual Indicator</strong>: Shows "MUTE" in volume display area</li>
+<li class="md-li"><strong>Preservation</strong>: Volume setting preserved</li>
+</ul>
+<h4 id="10-band-graphic-equalizer">10-Band Graphic Equalizer</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Professional Control</strong>: Covers entire audio spectrum</li>
+<li class="md-li"><strong>Frequencies</strong>: 32Hz, 64Hz, 125Hz, 250Hz, 500Hz, 1kHz, 2kHz, 4kHz, 8kHz, 16kHz</li>
+<li class="md-li"><strong>Range</strong>: ±12dB per band</li>
+<li class="md-li"><strong>Musical Q Factor</strong>: 1.4 for natural sound shaping</li>
+<li class="md-li"><strong>Real-time Processing</strong>: Web Audio API with Peaking filters</li>
+<li class="md-li"><strong>Dedicated Interface</strong>: Popup with vertical sliders</li>
+<li class="md-li"><strong>Visual Labels</strong>: Frequency and gain indicators</li>
+<li class="md-li"><strong>FLAT Button</strong>: Restore all bands to 0dB</li>
+<li class="md-li"><strong>Independence</strong>: Separate from bass/treble tone controls</li>
+<li class="md-li"><strong>EQUALIZER Rotary Knob</strong>: Dedicated chrome rotary knob below INPUT button</li>
+<li class="md-li">Same interaction model as VOLUME knob</li>
+<li class="md-li">Click left half to cycle to previous preset, right half for next preset</li>
+<li class="md-li">Mouse wheel support</li>
+<li class="md-li">Visual rotation animation (60° per preset step)</li>
+<li class="md-li">Presets in order: FLAT → POP → ROCK → JAZZ → CLASSIC → LIVE</li>
+<li class="md-li"><strong>EQ CUSTOM Mode</strong>: When sliders are adjusted manually, VFD displays <code>| EQ CUSTOM</code> status — identical behavior to named presets</li>
+</ul>
+<h4 id="2-band-tone-controls-classic-mcintosh-style">2-Band Tone Controls (Classic McIntosh Style)</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Bass</strong>: ±12dB at 200Hz (low shelf filter)</li>
+<li class="md-li">Adjustable in 2dB steps</li>
+<li class="md-li">Range: -12dB to +12dB</li>
+<li class="md-li"><strong>Treble</strong>: ±12dB at 3000Hz (high shelf filter)</li>
+<li class="md-li">Adjustable in 2dB steps</li>
+<li class="md-li">Range: -12dB to +12dB</li>
+<li class="md-li"><strong>Real-time Processing</strong>: Web Audio API biquad filters</li>
+<li class="md-li"><strong>Visual Feedback</strong>: Display in options menu</li>
+</ul>
+<h4 id="stereo-balance">Stereo Balance</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Left/Right Adjustment</strong>: -1 to +1</li>
+<li class="md-li"><strong>Web Audio StereoPanner</strong>: Precise control</li>
+<li class="md-li"><strong>BALANCE Rotary Knob</strong>: Dedicated chrome rotary knob below VOLUME button</li>
+<li class="md-li">Same interaction model as VOLUME knob</li>
+<li class="md-li">Click left half to move balance left, right half to move right</li>
+<li class="md-li">Mouse wheel support for fine control</li>
+<li class="md-li">Visual rotation animation (4° per step)</li>
+<li class="md-li"><strong>Precision Step</strong>: 2% increments (0.02) for fine-grained control</li>
+<li class="md-li"><strong>Mandatory Center Snap</strong>: When crossing 0, balance locks exactly to center before continuing — knob resets to 0° rotation</li>
+<li class="md-li"><strong>Smart Disable</strong>: Disabled when Mono mode is active</li>
+</ul>
+<h4 id="mono-mode">Mono Mode</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Stereo to Mono Conversion</strong>: Combined mono output</li>
+<li class="md-li"><strong>Auto-center</strong>: Balance centered on activation</li>
+<li class="md-li"><strong>Green LED</strong>: Visual indicator</li>
+<li class="md-li"><strong>Restoration</strong>: Previous balance restored on deactivation</li>
+</ul>
+<h4 id="loudness-compensation">Loudness Compensation</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Fletcher-Munson Based</strong>: Bass/treble boost at low volumes</li>
+<li class="md-li"><strong>Automatic Compensation</strong>: Based on current volume level</li>
+<li class="md-li"><strong>Maximum Effect</strong>: At 0% volume, progressively decreases</li>
+<li class="md-li"><strong>Bass Boost</strong>: Up to +8dB additional gain</li>
+<li class="md-li"><strong>Treble Boost</strong>: Up to +4dB additional gain</li>
+<li class="md-li"><strong>EQ Combination</strong>: Works with manual EQ settings</li>
+<li class="md-li"><strong>Visual Indicator</strong>: VFD display when active</li>
+</ul>
+<h4 id="reset-and-protection">Reset and Protection</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Tone Reset</strong>: One-click restoration to flat EQ (0dB) and center balance (0)</li>
+<li class="md-li"><strong>Power Guard Protection</strong>:</li>
+<li class="md-li">Visual warning when volume &gt; 90%</li>
+<li class="md-li">Rapid blinking red LEDs (left and right)</li>
+<li class="md-li">Prevents speaker/hearing damage</li>
+</ul>
+<h4 id="signal-bypass">Signal Bypass</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>BYPASS Button</strong>: Instantly cuts all audio processing in one click</li>
+<li class="md-li">Disables: 10-band EQ, Bass/Treble tone controls, Loudness compensation</li>
+<li class="md-li">All audio processing set to 0dB — pure signal path</li>
+<li class="md-li">VFD displays <code>| BYPASS</code> status (same style as EQ presets)</li>
+<li class="md-li">All processing controls (EQ sliders, Bass/Treble buttons, Loudness) are locked while active</li>
+<li class="md-li"><strong>Full State Restore</strong>: Deactivating BYPASS restores the exact previous state</li>
+<li class="md-li">Bass and treble gains</li>
+<li class="md-li">All 10 EQ band values</li>
+<li class="md-li">Loudness on/off status</li>
+<li class="md-li">Previous VFD preset display text</li>
+</ul>
+<h3 id="advanced-features">⚙️ Advanced Features</h3>
+<h4 id="library-management">Library Management</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Dedicated LIBRARY Button</strong>: Folder-based loading</li>
+<li class="md-li"><strong>Modal Interface</strong>: Browse and select tracks</li>
+<li class="md-li"><strong>Automatic Filtering</strong>: Support all audio/* MIME types + M4A/AAC/OGG</li>
+<li class="md-li"><strong>Track List</strong>: Display with green play indicators</li>
+<li class="md-li"><strong>Direct Playback</strong>: Click any track to load and start</li>
+<li class="md-li"><strong>Total Counter</strong>: Shows total track count on load</li>
+<li class="md-li"><strong>Security</strong>: Requires system to be powered on</li>
+<li class="md-li"><strong>Close</strong>: Close button and click-outside-to-close functionality</li>
+</ul>
+<h4 id="web-audio-api-processing">Web Audio API Processing</h4>
+<p class="md-p">Professional audio graph with:<br />
+- <strong>MediaElementSourceNode</strong>: Audio input source<br />
+- <strong>StereoPanner</strong>: Balance control<br />
+- <strong>Two BiquadFilter Nodes</strong>: Bass/treble tone controls<br />
+- <strong>Ten BiquadFilter Nodes</strong>: 10-band graphic equalizer (Peaking type)<br />
+- <strong>ChannelSplitter</strong>: Channel separation for analysis<br />
+- <strong>Two AnalyserNode</strong>: VU meter visualization<br />
+- <strong>AudioDestination</strong>: Final audio output</p>
+<h4 id="progressive-web-app-pwa">Progressive Web App (PWA)</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Service Worker</strong>: Offline cache for static resources</li>
+<li class="md-li"><strong>Installable</strong>: Add to home screen</li>
+<li class="md-li"><strong>Manifest</strong>: Complete app configuration</li>
+<li class="md-li"><strong>Offline Mode</strong>: Works without connection after installation</li>
+<li class="md-li"><strong>Adaptive Icons</strong>: Support for all screen sizes</li>
+</ul>
+<h4 id="electron-desktop-application">Electron Desktop Application</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Windows Thumbnail Buttons</strong>: Taskbar controls (Previous, Play/Pause, Next)</li>
+<li class="md-li"><strong>Media Keys</strong>: System key support (Play/Pause, Next, Previous)</li>
+<li class="md-li"><strong>Native Window Controls</strong>: Native menu bar</li>
+<li class="md-li"><strong>System Integration</strong>: Complete native application</li>
+<li class="md-li"><strong>Portable Build</strong>: Windows portable version</li>
+</ul>
+<hr />
+<h2 id="technical-architecture">🏗️ Technical Architecture</h2>
+<h3 id="technology-stack">Technology Stack</h3>
+<h4 id="frontend">Frontend</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>HTML5</strong>: Semantic structure with modular components</li>
+<li class="md-li"><strong>CSS3</strong>: Responsive design with CSS variables and animations</li>
+<li class="md-li"><strong>JavaScript (ES6+)</strong>: Modern application logic with modules</li>
+<li class="md-li"><strong>Web Audio API</strong>: Professional real-time audio processing</li>
+<li class="md-li"><strong>jsmediatags</strong>: Audio metadata extraction (ID3 tags, artwork)</li>
+<li class="md-li"><strong>Font Awesome 7</strong>: Complete icon library</li>
+</ul>
+<h4 id="backendruntime">Backend/Runtime</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Electron 26</strong>: Cross-platform desktop framework</li>
+<li class="md-li"><strong>Node.js</strong>: JavaScript runtime for desktop app</li>
+<li class="md-li"><strong>electron-builder</strong>: Packaging tool for distribution</li>
+</ul>
+<h4 id="web-apis-used">Web APIs Used</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Media Session API</strong>: System media controls</li>
+<li class="md-li"><strong>Service Worker API</strong>: PWA offline cache</li>
+<li class="md-li"><strong>Web Audio API</strong>: Audio processing and analysis</li>
+<li class="md-li"><strong>File System Access API</strong>: Local file access</li>
+<li class="md-li"><strong>Canvas API</strong>: VU meter rendering (optional)</li>
+</ul>
+<h3 id="project-structure">Project Structure</h3>
+<pre class="md-pre"><code>McIntosh-DAP-main/
+├── index.html                 # Main entry point
+├── main.js                    # Electron entry point
+├── script.js                  # Main application logic
+├── style.css                  # Global styles
+├── sw.js                      # PWA Service Worker
+├── manifest.json              # PWA Manifest
+├── package.json               # npm/Electron configuration
+│
+├── assets/                    # Static resources
+│   ├── fontawesome7/          # Icon library
+│   │   ├── css/               # FA stylesheets
+│   │   └── webfonts/          # FA fonts
+│   ├── img/                   # Images and logos
+│   │   ├── favicon.ico        # App icon
+│   │   ├── favicon.png        # PNG icon
+│   │   ├── logo.png           # McIntosh logo
+│   │   ├── mc-logo*.png       # Logo variations
+│   │   └── vumeter*.png       # VU meter backgrounds
+│   ├── info/                  # Information images
+│   └── windows/               # Windows control icons
+│
+├── components/                # Modular HTML components
+│   ├── controls.html          # Controls section (knobs, buttons)
+│   ├── display-area.html      # VFD display area
+│   ├── meter-section.html     # VU meters section
+│   ├── modals.html            # Modals and popups
+│   └── options-menu.html      # Options menu and EQ
+│
+├── css/                       # Modular stylesheets
+│   ├── root.css               # Global CSS variables
+│   ├── chassis.css            # Chassis and panel styles
+│   ├── controls.css           # Control and button styles
+│   ├── display.css            # VFD display styles
+│   ├── meters.css             # VU meter styles
+│   ├── eq.css                 # Equalizer styles
+│   ├── modals.css             # Modal and popup styles
+│   ├── states.css             # Visual states (on/off/hover)
+│   └── mobile.css             # Responsive mobile/tablet
+│
+└── js/                        # JavaScript modules
+    ├── component-loader.js    # HTML component loader
+    └── mcintosh-audio-engine.js # Web Audio API engine
+</code></pre>
+<h3 id="audio-architecture">Audio Architecture</h3>
+<p class="md-p">The audio system is built around a sophisticated Web Audio API graph:</p>
+<pre class="md-pre"><code>Audio File (HTML5 Audio Element)
+        ↓
+MediaElementSourceNode
+        ↓
+StereoPannerNode (Balance ±1)
+        ↓
+BiquadFilterNode (Bass: Low Shelf @ 200Hz, ±12dB)
+        ↓
+BiquadFilterNode (Treble: High Shelf @ 3000Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 1: Peaking @ 32Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 2: Peaking @ 64Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 3: Peaking @ 125Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 4: Peaking @ 250Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 5: Peaking @ 500Hz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 6: Peaking @ 1kHz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 7: Peaking @ 2kHz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 8: Peaking @ 4kHz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 9: Peaking @ 8kHz, ±12dB)
+        ↓
+BiquadFilterNode (EQ Band 10: Peaking @ 16kHz, ±12dB)
+        ↓
+ChannelSplitterNode (L/R Separation)
+        ↓              ↓
+AnalyserNode (L)  AnalyserNode (R)
+        ↓
+AudioDestinationNode (Speakers)
+</code></pre>
+<h4 id="mcintoshaudioengine-class">McIntoshAudioEngine Class</h4>
+<p class="md-p"><strong>Core Properties</strong>:</p>
+<pre class="md-pre"><code class="language-javascript">{
+  audio: HTMLAudioElement,         // HTML5 audio element
+  audioCtx: AudioContext,           // Web Audio context
+  source: MediaElementSourceNode,   // Audio source
+  balanceNode: StereoPannerNode,    // Balance control
+  bassFilter: BiquadFilterNode,     // Bass filter
+  trebleFilter: BiquadFilterNode,   // Treble filter
+  filters: Object,                  // Map of 10 EQ filters {freq: filter}
+  analyserL: AnalyserNode,          // Left channel analyzer
+  analyserR: AnalyserNode,          // Right channel analyzer
+  eqBands: Array,                   // [32, 64, 125, 250, 500, 1k, 2k, 4k, 8k, 16k]
+}
+</code></pre>
+<p class="md-p"><strong>Core Methods</strong>:<br />
+- <code>init()</code>: Initialize audio context and graph<br />
+- <code>play()</code>: Start playback<br />
+- <code>pause()</code>: Pause playback<br />
+- <code>stop()</code>: Stop and reset<br />
+- <code>setVolume(val)</code>: Set volume (0-1)<br />
+- <code>setBalance(val)</code>: Set balance (-1 to +1)<br />
+- <code>updateEQ(bass, treble, loudness)</code>: Update tone filters<br />
+- <code>setCustomFilter(freq, gain)</code>: Set EQ band gain<br />
+- <code>getLevels()</code>: Return audio levels {left, right}</p>
+<h3 id="modular-components">Modular Components</h3>
+<h4 id="1-component-loader-component-loaderjs">1. Component Loader (component-loader.js)</h4>
+<p class="md-p"><strong>Role</strong>: Dynamically loads HTML components into main page</p>
+<p class="md-p"><strong>How it Works</strong>:</p>
+<pre class="md-pre"><code class="language-javascript">// List of components to load
+const components = [
+  { file: 'meter-section.html', target: '#amplifier-panel' },
+  { file: 'display-area.html', target: '#amplifier-panel' },
+  { file: 'controls.html', target: '#amplifier-panel' },
+  { file: 'modals.html', target: '#modals-section' },
+  { file: 'options-menu.html', target: '#modals-section' }
+];
+
+// Loading with fetch and insertion
+components.forEach(async comp =&gt; {
+  const html = await fetch(`components/${comp.file}`).then(r =&gt; r.text());
+  document.querySelector(comp.target).insertAdjacentHTML('beforeend', html);
+});
+
+// Event triggered when all components are loaded
+document.dispatchEvent(new Event('componentsLoaded'));
+</code></pre>
+<p class="md-p"><strong>Benefits</strong>:<br />
+- Separation of concerns<br />
+- Improved maintainability<br />
+- Asynchronous loading<br />
+- Component reusability</p>
+<h4 id="2-main-script-scriptjs">2. Main Script (script.js)</h4>
+<p class="md-p"><strong>Role</strong>: Orchestrates all application logic</p>
+<p class="md-p"><strong>Structure</strong>:</p>
+<pre class="md-pre"><code class="language-javascript">// --- IMPORT &amp; INIT ---
+const engine = new McIntoshAudioEngine(audio);
+
+// --- STATE VARIABLES ---
+let playlist = [];
+let currentIndex = 0;
+let isPoweredOn = false;
+let currentVolume = 0.05;
+let bassGain = 0;
+let trebleGain = 0;
+let currentBalance = 0;
+// ... etc
+
+// --- EVENT LISTENERS ---
+// Control buttons
+playPauseBtn.addEventListener('click', handlePlayPause);
+prevBtn.addEventListener('click', handlePrevious);
+nextBtn.addEventListener('click', handleNext);
+
+// Knobs
+volumeKnob.addEventListener('mousedown', handleVolumeStart);
+inputBtn.addEventListener('click', () =&gt; fileUpload.click());
+
+// Audio element
+audio.addEventListener('timeupdate', updateTimeDisplay);
+audio.addEventListener('ended', handleTrackEnd);
+
+// --- BUSINESS FUNCTIONS ---
+function loadTrack(index) { /* ... */ }
+function updateVUMeters() { /* ... */ }
+function applyLoudnessEffect() { /* ... */ }
+// ... etc
+</code></pre>
+<p class="md-p"><strong>Responsibilities</strong>:<br />
+- Playlist management<br />
+- Playback controls<br />
+- Interface updates<br />
+- VU meter animation<br />
+- Metadata handling<br />
+- Playback modes (repeat, random, A-B)</p>
+<h4 id="3-electron-main-mainjs">3. Electron Main (main.js)</h4>
+<p class="md-p"><strong>Role</strong>: Electron application entry point</p>
+<p class="md-p"><strong>Features</strong>:</p>
+<pre class="md-pre"><code class="language-javascript">const { app, BrowserWindow, globalShortcut } = require('electron');
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 1800,
+    height: 900,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  win.loadFile('index.html');
+
+  // Windows thumbnail buttons
+  win.setThumbarButtons([
+    { icon: 'prev.png', click: () =&gt; win.webContents.send('prev') },
+    { icon: 'play.png', click: () =&gt; win.webContents.send('play-pause') },
+    { icon: 'next.png', click: () =&gt; win.webContents.send('next') }
+  ]);
+
+  // Global keyboard shortcuts
+  globalShortcut.register('MediaPlayPause', () =&gt; { /* ... */ });
+  globalShortcut.register('MediaNextTrack', () =&gt; { /* ... */ });
+}
+
+app.whenReady().then(createWindow);
+</code></pre>
+<h4 id="4-service-worker-swjs">4. Service Worker (sw.js)</h4>
+<p class="md-p"><strong>Role</strong>: PWA cache management for offline functionality</p>
+<p class="md-p"><strong>Cache Strategy</strong>:</p>
+<pre class="md-pre"><code class="language-javascript">const CACHE_NAME = 'mcintosh-dap-v2.5.1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/script.js',
+  '/js/mcintosh-audio-engine.js',
+  '/js/component-loader.js',
+  '/assets/fontawesome7/css/all.min.css',
+  // ... all static resources
+];
+
+// Install: initial caching
+self.addEventListener('install', e =&gt; {
+  e.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache =&gt; cache.addAll(urlsToCache))
+  );
+});
+
+// Fetch: cache-first strategy
+self.addEventListener('fetch', e =&gt; {
+  e.respondWith(
+    caches.match(e.request)
+      .then(response =&gt; response || fetch(e.request))
+  );
+});
+</code></pre>
+<h3 id="state-management-system">State Management System</h3>
+<h4 id="global-states">Global States</h4>
+<pre class="md-pre"><code class="language-javascript">// System state
+isPoweredOn: boolean        // System on/off
+isMuted: boolean            // Audio muted
+isLoudnessActive: boolean   // Loudness compensation active
+isMonoActive: boolean       // Mono mode active
+isBypassActive: boolean     // Bypass mode active (all processing cut)
+bypassSnapshot: Object|null // Saved state before bypass activation
+
+// Playback state
+currentIndex: number        // Current track index
+playlist: Array             // Track list
+isRandom: boolean           // Random mode
+repeatMode: 0|1|2          // 0: off, 1: repeat(1), 2: repeat(all)
+abMode: 0|1|2              // 0: off, 1: A set, 2: A-B active
+pointA: number             // Point A position (seconds)
+pointB: number             // Point B position (seconds)
+
+// Audio state
+currentVolume: number      // Current volume (0-1)
+bassGain: number           // Bass gain (-12 to +12 dB)
+trebleGain: number         // Treble gain (-12 to +12 dB)
+currentBalance: number     // Balance (-1 to +1)
+
+// Visual state
+isShowingRemaining: boolean // Show remaining/elapsed time
+currentAngleL: number       // Left VU needle angle
+currentAngleR: number       // Right VU needle angle
+</code></pre>
+<h4 id="data-flow">Data Flow</h4>
+<pre class="md-pre"><code>User Action (Event)
+        ↓
+Event Handler
+        ↓
+State Update
+        ↓
+Engine Update (if needed)
+        ↓
+UI Update
+        ↓
+Visual Feedback
+</code></pre>
+<h3 id="performance-optimizations">Performance Optimizations</h3>
+<h4 id="1-vu-meter-animation">1. VU Meter Animation</h4>
+<pre class="md-pre"><code class="language-javascript">// Smoothing with requestAnimationFrame
+function animateMeters() {
+  const { left, right } = engine.getLevels();
+
+  // Conversion with power-law for natural response
+  const dbL = Math.pow(left / 255, 1.5) * 110;
+  const dbR = Math.pow(right / 255, 1.5) * 110;
+
+  // 25% smoothing for fluid movement
+  targetAngleL = dbL - 55;
+  targetAngleR = dbR - 55;
+  currentAngleL += (targetAngleL - currentAngleL) * 0.25;
+  currentAngleR += (targetAngleR - currentAngleR) * 0.25;
+
+  // Apply with CSS transform (GPU accelerated)
+  nl.style.transform = `rotate(${currentAngleL}deg)`;
+  nr.style.transform = `rotate(${currentAngleR}deg)`;
+
+  requestAnimationFrame(animateMeters);
+}
+</code></pre>
+<h4 id="2-control-debouncing">2. Control Debouncing</h4>
+<pre class="md-pre"><code class="language-javascript">// Volume display auto-hide
+let volTimeout = null;
+function showVolumeBriefly() {
+  clearTimeout(volTimeout);
+  volDisplay.style.opacity = &quot;1&quot;;
+  volTimeout = setTimeout(() =&gt; {
+    volDisplay.style.opacity = &quot;0&quot;;
+  }, 2000);
+}
+
+// Fast seek with interval
+let seekInterval = null;
+function startSeeking(direction) {
+  setTimeout(() =&gt; {
+    if (!isMouseDown) return;
+    seekInterval = setInterval(() =&gt; {
+      audio.currentTime += direction * 3; // ±3 seconds
+    }, 100);
+  }, 500); // 500ms delay
+}
+</code></pre>
+<h4 id="3-lazy-loading-of-metadata">3. Lazy Loading of Metadata</h4>
+<pre class="md-pre"><code class="language-javascript">function loadTrack(index) {
+  // Immediate audio loading
+  audio.src = URL.createObjectURL(playlist[index]);
+
+  // Asynchronous metadata extraction
+  jsmediatags.read(playlist[index], {
+    onSuccess: tag =&gt; {
+      updateMetadataDisplay(tag);
+      extractAlbumArt(tag);
+    }
+  });
+}
+</code></pre>
+<hr />
+<h2 id="installation-and-usage">📥 Installation and Usage</h2>
+<h3 id="web-version-pwa">Web Version (PWA)</h3>
+<h4 id="prerequisites">Prerequisites</h4>
+<ul class="md-ul">
+<li class="md-li">Modern browser (Chrome, Edge, Firefox, Safari)</li>
+<li class="md-li">Web Audio API support</li>
+<li class="md-li">Service worker support (for PWA)</li>
+</ul>
+<h4 id="installation">Installation</h4>
+<ol class="md-ol">
+<li class="md-li"><strong>Clone the repository</strong>:</li>
+</ol>
+<pre class="md-pre"><code class="language-bash">git clone https://github.com/yourusername/mcintosh-dap.git
+cd mcintosh-dap
+</code></pre>
+<ol class="md-ol">
+<li class="md-li"><strong>Serve the application</strong>:</li>
+</ol>
+<pre class="md-pre"><code class="language-bash">python -m http.server 8000
+
+npx http-server -p 8000
+</code></pre>
+<ol class="md-ol">
+<li class="md-li">
+<p class="md-p"><strong>Access</strong>: Open <code>http://localhost:8000</code></p>
+</li>
+<li class="md-li">
+<p class="md-p"><strong>Install as PWA</strong> (optional):</p>
+</li>
+<li class="md-li">Chrome: Click install icon in address bar</li>
+<li class="md-li">Edge: Menu → Apps → Install this app</li>
+<li class="md-li">Safari: Share → Add to Home Screen</li>
+</ol>
+<h3 id="desktop-version-electron">Desktop Version (Electron)</h3>
+<h4 id="prerequisites_1">Prerequisites</h4>
+<ul class="md-ul">
+<li class="md-li">Node.js 14+ and npm</li>
+</ul>
+<h4 id="installation-and-build">Installation and Build</h4>
+<pre class="md-pre"><code class="language-bash">npm install
+
+npm start
+
+npm run dist
+</code></pre>
+<h4 id="executable-file">Executable File</h4>
+<p class="md-p">After build, the portable app is in:</p>
+<pre class="md-pre"><code>dist/McIntosh-dap.exe
+</code></pre>
+<h3 id="usage">Usage</h3>
+<h4 id="getting-started">Getting Started</h4>
+<ol class="md-ol">
+<li class="md-li"><strong>Power on the system</strong>: Click STANDBY/ON button (red LED)</li>
+<li class="md-li"><strong>Load audio files</strong>:</li>
+<li class="md-li">Click INPUT knob to select individual files</li>
+<li class="md-li">OR click LIBRARY to load a folder</li>
+<li class="md-li">OR drag &amp; drop audio files anywhere on the interface</li>
+<li class="md-li"><strong>Start playback</strong>: Click PLAY/PAUSE</li>
+</ol>
+<h4 id="main-controls">Main Controls</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>INPUT</strong>: Load individual files</li>
+<li class="md-li"><strong>LIBRARY</strong>: Load complete folder</li>
+<li class="md-li"><strong>Drag &amp; Drop</strong>: Drop audio files anywhere on the interface to add them to the playlist</li>
+<li class="md-li"><strong>PLAY/PAUSE</strong>: Play/Pause</li>
+<li class="md-li"><strong>PREV/NEXT</strong>: Previous/next track (hold for fast seek)</li>
+<li class="md-li"><strong>STOP</strong>: Stop playback</li>
+<li class="md-li"><strong>VOLUME</strong>: Click left/right or use mouse wheel — PUSH label above, ADJUST label below</li>
+<li class="md-li"><strong>EQUALIZER</strong>: Rotary knob below INPUT — click left/right or mouse wheel to cycle EQ presets</li>
+<li class="md-li"><strong>BALANCE</strong>: Rotary knob below VOLUME — click left/right or mouse wheel to adjust in 2% steps</li>
+<li class="md-li"><strong>MUTE</strong>: Mute audio</li>
+<li class="md-li"><strong>BYPASS</strong>: Cut all audio processing instantly (EQ, Bass/Treble, Loudness) — click again to restore</li>
+<li class="md-li"><strong>OPTIONS</strong>: Open options menu (EQ, balance, etc.)</li>
+<li class="md-li"><strong>DISPLAY</strong>: Change display mode</li>
+<li class="md-li"><strong>RESET</strong>: Restart application (with confirmation)</li>
+</ul>
+<h4 id="options-menu">OPTIONS Menu</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>Bass/Treble</strong>: Tone controls (±12dB in 2dB steps)</li>
+<li class="md-li"><strong>Balance L/R</strong>: Stereo balance (0.1 increments)</li>
+<li class="md-li"><strong>TONE RESET</strong>: Reset EQ and balance</li>
+<li class="md-li"><strong>MONO</strong>: Mono mode on/off</li>
+<li class="md-li"><strong>LOUDNESS</strong>: Loudness compensation on/off</li>
+<li class="md-li"><strong>10-BAND EQ</strong>: Open graphic equalizer</li>
+<li class="md-li"><strong>REPEAT</strong>: Cycle OFF → REPEAT(1) → REPEAT(ALL)</li>
+<li class="md-li"><strong>RANDOM</strong>: Random mode on/off</li>
+<li class="md-li"><strong>A-B LOOP</strong>: Cycle OFF → A set → A-B active</li>
+<li class="md-li"><strong>BACK COLOR</strong>: Customize background color</li>
+<li class="md-li"><strong>SHADOW COLOR</strong>: Customize shadow color</li>
+</ul>
+<h4 id="direct-rotary-controls-no-menu-required">Direct Rotary Controls (no menu required)</h4>
+<ul class="md-ul">
+<li class="md-li"><strong>EQUALIZER knob</strong> (below INPUT): Cycle through EQ presets directly — FLAT, POP, ROCK, JAZZ, CLASSIC, LIVE</li>
+<li class="md-li"><strong>BALANCE knob</strong> (below VOLUME): Adjust stereo balance in 2% steps with mandatory center snap</li>
+</ul>
+<hr />
+<h2 id="configuration">⚙️ Configuration</h2>
+<h3 id="customizable-css-variables">Customizable CSS Variables</h3>
+<p class="md-p">File <code>/css/root.css</code>:</p>
+<pre class="md-pre"><code class="language-css">:root {
+  /* Main colors */
+  --panel-black: #1a1a1a;          /* Panel background */
+  --mc-blue: #00c3ff;               /* McIntosh signature blue */
+  --mc-green: #00ff66;              /* Label and LED green */
+  --chassis-shadow: rgba(0,0,0,0.7); /* Chassis shadow */
+
+  /* VFD colors */
+  --vfd-bg: #0a0a0a;               /* VFD background */
+  --vfd-text: #00c3ff;             /* VFD text */
+  --vfd-glow: rgba(0,195,255,0.3); /* VFD glow */
+
+  /* Button colors */
+  --btn-black: #000000;            /* Black buttons */
+  --btn-hover: #1a1a1a;            /* Button hover */
+  --btn-active: #2a2a2a;           /* Active buttons */
+
+  /* Dimensions */
+  --panel-width: 1650px;
+  --panel-height: 750px;
+  --knob-size: 80px;
+}
+</code></pre>
+<h3 id="electron-configuration">Electron Configuration</h3>
+<p class="md-p">File <code>package.json</code>:</p>
+<pre class="md-pre"><code class="language-json">{
+  &quot;build&quot;: {
+    &quot;appId&quot;: &quot;com.yohann.mcintosh&quot;,
+    &quot;productName&quot;: &quot;McIntosh-DAP&quot;,
+    &quot;win&quot;: {
+      &quot;icon&quot;: &quot;assets/img/favicon.ico&quot;,
+      &quot;target&quot;: &quot;portable&quot;
+    },
+    &quot;directories&quot;: {
+      &quot;output&quot;: &quot;dist&quot;
+    }
+  }
+}
+</code></pre>
+<h3 id="service-worker-cache">Service Worker Cache</h3>
+<p class="md-p">File <code>sw.js</code> - Modify to customize cache:</p>
+<pre class="md-pre"><code class="language-javascript">const CACHE_NAME = 'mcintosh-dap-v2.5.1';
+const urlsToCache = [
+  // Add or remove URLs to cache
+];
+</code></pre>
+<hr />
+<h2 id="contributing">🤝 Contributing</h2>
+<p class="md-p">Contributions are welcome! Here's how to participate:</p>
+<h3 id="contribution-guidelines">Contribution Guidelines</h3>
+<ol class="md-ol">
+<li class="md-li"><strong>Fork</strong> the project</li>
+<li class="md-li"><strong>Create a branch</strong> for your feature (<code>git checkout -b feature/AmazingFeature</code>)</li>
+<li class="md-li"><strong>Commit</strong> your changes (<code>git commit -m 'Add some AmazingFeature'</code>)</li>
+<li class="md-li"><strong>Push</strong> to the branch (<code>git push origin feature/AmazingFeature</code>)</li>
+<li class="md-li"><strong>Open a Pull Request</strong></li>
+</ol>
+<h3 id="code-standards">Code Standards</h3>
+<h4 id="javascript">JavaScript</h4>
+<ul class="md-ul">
+<li class="md-li">Modern ES6+</li>
+<li class="md-li">Indentation: 4 spaces</li>
+<li class="md-li">Semicolons required</li>
+<li class="md-li">JSDoc comments for main functions</li>
+<li class="md-li">Naming: camelCase for variables/functions, PascalCase for classes</li>
+</ul>
+<h4 id="css">CSS</h4>
+<ul class="md-ul">
+<li class="md-li">BEM naming convention when appropriate</li>
+<li class="md-li">CSS variables for reusable values</li>
+<li class="md-li">Mobile-first for responsive</li>
+<li class="md-li">Comments for main sections</li>
+</ul>
+<h4 id="html">HTML</h4>
+<ul class="md-ul">
+<li class="md-li">Semantic HTML5</li>
+<li class="md-li">ARIA attributes for accessibility</li>
+<li class="md-li">Indentation: 4 spaces</li>
+</ul>
+<h3 id="pull-request-process">Pull Request Process</h3>
+<ol class="md-ol">
+<li class="md-li"><strong>Update</strong> documentation if needed</li>
+<li class="md-li"><strong>Add tests</strong> for new features</li>
+<li class="md-li"><strong>Verify</strong> code works in web and desktop</li>
+<li class="md-li"><strong>Describe</strong> changes clearly in PR</li>
+<li class="md-li"><strong>Wait</strong> for review and feedback</li>
+</ol>
+<h3 id="bug-reporting">Bug Reporting</h3>
+<p class="md-p">When reporting a bug, include:</p>
+<ul class="md-ul">
+<li class="md-li"><strong>Browser/OS</strong> (e.g., Windows 11, Chrome 120)</li>
+<li class="md-li"><strong>Steps to reproduce</strong>:</li>
+<li class="md-li">First step</li>
+<li class="md-li">Second step</li>
+<li class="md-li">What happened</li>
+<li class="md-li"><strong>Expected vs actual behavior</strong></li>
+<li class="md-li"><strong>Console errors</strong> (if any) - F12 → Console</li>
+<li class="md-li"><strong>Screenshots</strong> (if visual issue)</li>
+<li class="md-li"><strong>Audio file format</strong> (if playback issue)</li>
+</ul>
+<h3 id="feature-requests">Feature Requests</h3>
+<p class="md-p">When requesting a feature:</p>
+<ul class="md-ul">
+<li class="md-li">Check if already on roadmap</li>
+<li class="md-li">Explain the use case</li>
+<li class="md-li">Describe expected behavior</li>
+<li class="md-li">Consider implementation complexity</li>
+<li class="md-li">Open to discussion and alternatives</li>
+</ul>
+<hr />
+<h2 id="license">📄 License</h2>
+<p class="md-p">This project is licensed under the <strong>MIT License</strong>.</p>
+<pre class="md-pre"><code>MIT License
+
+Copyright (c) 2026 Yohann Zaoui
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</code></pre>
+<hr />
+<h2 id="disclaimer">⚠️ Disclaimer</h2>
+<p class="md-p">This is a <strong>fan-made tribute project</strong> and:</p>
+<ul class="md-ul">
+<li class="md-li"><strong>IS NOT affiliated</strong> with McIntosh Laboratory, Inc.</li>
+<li class="md-li"><strong>IS NOT endorsed</strong> by McIntosh Laboratory, Inc.</li>
+<li class="md-li"><strong>IS NOT an official</strong> McIntosh product</li>
+<li class="md-li"><strong>IS NOT intended for commercial use</strong></li>
+</ul>
+<p class="md-p">McIntosh® is a registered trademark of McIntosh Laboratory, Inc. This project is created solely for educational and entertainment purposes as a tribute to their iconic design legacy.</p>
+<hr />
+<h2 id="credits-acknowledgments">🙏 Credits &amp; Acknowledgments</h2>
+<h3 id="design-inspiration">Design Inspiration</h3>
+<p class="md-p">This project pays homage to <strong>McIntosh Laboratory</strong>, legendary American manufacturer of high-end audio equipment since 1949, renowned for:</p>
+<ul class="md-ul">
+<li class="md-li">Iconic blue watt meters with illuminated scales</li>
+<li class="md-li">Premium build quality and craftsmanship</li>
+<li class="md-li">Timeless design aesthetics (black glass, chrome, illuminated meters)</li>
+<li class="md-li">Audiophile-grade performance and sound quality</li>
+<li class="md-li">Power Guard® technology for speaker protection</li>
+<li class="md-li">Hand-built in Binghamton, New York, USA</li>
+</ul>
+<h3 id="libraries-resources">Libraries &amp; Resources</h3>
+<ul class="md-ul">
+<li class="md-li"><strong><a href="https://fontawesome.com/">Font Awesome</a></strong> - Comprehensive icon library (v7)</li>
+<li class="md-li"><strong><a href="https://github.com/aadsm/jsmediatags">jsmediatags</a></strong> - Audio metadata extraction library</li>
+<li class="md-li"><strong><a href="https://fonts.google.com/">Google Fonts</a></strong> - Web typography (Bitcount Single, Roboto)</li>
+<li class="md-li"><strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API">Web Audio API</a></strong> - Mozilla Developer Network documentation</li>
+<li class="md-li"><strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio">HTML5 Audio</a></strong> - W3C specification</li>
+<li class="md-li"><strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">Service Worker API</a></strong> - PWA offline functionality</li>
+<li class="md-li"><strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API">Media Session API</a></strong> - System media controls integration</li>
+<li class="md-li"><strong><a href="https://www.electronjs.org/">Electron</a></strong> - Cross-platform desktop application framework</li>
+</ul>
+<h3 id="special-thanks">Special Thanks</h3>
+<ul class="md-ul">
+<li class="md-li">The open-source community for tools and inspiration</li>
+<li class="md-li">Audio enthusiasts and HiFi collectors for feedback</li>
+<li class="md-li">McIntosh Laboratory for decades of design excellence</li>
+<li class="md-li">All contributors, testers, and users</li>
+<li class="md-li">The Web Audio API community and documentation authors</li>
+<li class="md-li">Electron.js team for desktop integration capabilities</li>
+</ul>
+<hr />
+<h2 id="support-contact">📞 Support &amp; Contact</h2>
+<h3 id="getting-help">Getting Help</h3>
+<ul class="md-ul">
+<li class="md-li"><strong>Issues</strong>: <a href="https://github.com/yourusername/mcintosh-dap/issues">GitHub Issues</a></li>
+<li class="md-li"><strong>Discussions</strong>: <a href="https://github.com/yourusername/mcintosh-dap/discussions">GitHub Discussions</a></li>
+<li class="md-li"><strong>Documentation</strong>: This README and inline code comments</li>
+</ul>
+<h3 id="useful-resources">Useful Resources</h3>
+<ul class="md-ul">
+<li class="md-li"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API">Web Audio API Documentation</a></li>
+<li class="md-li"><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio">HTML5 Audio Guide</a></li>
+<li class="md-li"><a href="https://github.com/aadsm/jsmediatags">jsmediatags Documentation</a></li>
+<li class="md-li"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">Service Worker Documentation</a></li>
+<li class="md-li"><a href="https://web.dev/progressive-web-apps/">PWA Guide</a></li>
+<li class="md-li"><a href="https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode">BiquadFilter API</a></li>
+<li class="md-li"><a href="https://developer.mozilla.org/en-US/docs/Web/API/StereoPannerNode">StereoPanner API</a></li>
+<li class="md-li"><a href="https://www.electronjs.org/docs/latest">Electron Documentation</a></li>
+</ul>
+<h3 id="faq">FAQ</h3>
+<p class="md-p"><strong>Q: Can I add files by dragging and dropping them?</strong><br />
+A: Yes! Drag any audio files (FLAC, MP3, WAV, M4A, AAC, OGG, MP4) directly onto the interface. They will be added to the existing playlist. If the playlist was empty, playback starts automatically. The VFD briefly displays <code>+N FILE(S) ADDED</code> as confirmation.</p>
+<p class="md-p"><strong>Q: Why won't my audio files play?</strong><br />
+A: Check that they're in a supported format (FLAC/MP3/WAV/MP4/AAC/OGG). Some browsers require user interaction before playing audio.</p>
+<p class="md-p"><strong>Q: Why can't I see album art?</strong><br />
+A: Album art must be embedded in the file's ID3 tags. Use a tag editor like Mp3tag to add artwork.</p>
+<p class="md-p"><strong>Q: What's the difference between REPEAT and REPEAT(1)?</strong><br />
+A: REPEAT(1) repeats the current track. REPEAT(ALL) repeats the entire playlist.</p>
+<p class="md-p"><strong>Q: How do I install as a PWA?</strong><br />
+A: Serve via HTTPS, then look for "Install" option in your browser menu (usually in the address bar).</p>
+<p class="md-p"><strong>Q: Why don't VU meters move?</strong><br />
+A: Ensure audio is playing and system is powered on. Check browser console for Web Audio API errors.</p>
+<p class="md-p"><strong>Q: Can I use this offline?</strong><br />
+A: Yes, once installed as a PWA. However, audio files must be loaded each session (not cached).</p>
+<p class="md-p"><strong>Q: How do I build the desktop app?</strong><br />
+A: Install Node.js, run <code>npm install</code>, then <code>npm run dist</code>. See the Desktop Version section for details.</p>
+<p class="md-p"><strong>Q: Do the taskbar buttons work on macOS/Linux?</strong><br />
+A: Taskbar thumbnail buttons are Windows-only. However, global media key shortcuts work on all platforms.</p>
+<p class="md-p"><strong>Q: What's the difference between the 10-band EQ and BASS/TREBLE?</strong><br />
+A: BASS/TREBLE are classic tone controls (shelf filters) for quick adjustments. The 10-band EQ provides precise frequency control across the entire audio spectrum. They work together.</p>
+<p class="md-p"><strong>Q: How do I reset all EQ settings?</strong><br />
+A: Use TONE RESET in the options menu to reset BASS/TREBLE and balance. Use FLAT in the EQ popup to reset all 10 bands to 0dB. The EQUALIZER knob will also select the FLAT preset when cycled to position 0.</p>
+<p class="md-p"><strong>Q: What does BYPASS do exactly?</strong><br />
+A: BYPASS cuts all audio processing in one click — EQ, Bass/Treble tone controls, and Loudness are all set to 0dB. The signal passes through completely unprocessed. When you deactivate BYPASS, every setting is restored exactly as it was before: all EQ bands, tone controls, and loudness state. It's useful for quickly comparing your processed sound with the original signal.</p>
+<p class="md-p"><strong>Q: Can I change EQ settings while BYPASS is active?</strong><br />
+A: No — all processing controls (EQ sliders, Bass/Treble buttons, Loudness) are locked while BYPASS is active, to preserve the state that will be restored on deactivation.</p>
+<p class="md-p"><strong>Q: Can I customize the visual appearance?</strong><br />
+A: Yes! Use the BACK COLOR and SHADOW COLOR pickers in the options menu. The DISPLAY button also cycles through different visual states.</p>
+<p class="md-p"><strong>Q: How do I set the balance exactly to center?</strong><br />
+A: The BALANCE knob features a mandatory center snap — when turning from left to right (or right to left), it automatically locks to 0 (center) before continuing. This ensures you never miss the center position.</p>
+<hr />
+<p class="md-p"><strong>Enjoy your premium web audio experience! 🎵🎛️</strong></p>
+<p class="md-p"><em>Made with ❤️ for audio enthusiasts everywhere</em></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">McIntosh DAP</div>
+  <p class="footer-tagline">Made with ❤️ for audio enthusiasts everywhere</p>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = 1;
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.md-h2').forEach(el => {
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    obs.observe(el);
+  });
+
+  // Ancres automatiques sur les titres H2
+  document.querySelectorAll('.md-h2').forEach(h => {
+    const id = h.textContent.trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    h.id = id;
+  });
+</script>
+</body>
+</html>
