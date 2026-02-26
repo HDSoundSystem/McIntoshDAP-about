@@ -7,7 +7,7 @@ A premium web-based audio player inspired by the legendary McIntosh amplifier de
 
 ![Status](https://img.shields.io/badge/status-active-success)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.7.0-blue)
+![Version](https://img.shields.io/badge/version-3.0-blue)
 
 
 ![543375630-9f65f1d2-5f77-458b-b0fc-5ec35e992042](https://github.com/user-attachments/assets/7bc36eb4-3abf-4167-862a-a5e87df7afc9)
@@ -1054,6 +1054,7 @@ A: Yes! Use the BACK COLOR and SHADOW COLOR pickers in the options menu. The DIS
 A: The BALANCE knob features a mandatory center snap — when turning from left to right (or right to left), it automatically locks to 0 (center) before continuing. This ensures you never miss the center position.
 
 ---
+<img width="1899" height="892" alt="1-2" src="https://github.com/user-attachments/assets/ce9f9dd1-983a-49e5-8864-a7f3d64dbe49" />
 <img width="1803" height="818" alt="1-1" src="https://github.com/user-attachments/assets/31de67c7-c8b7-45a9-a073-e8672985c85f" />
 <img width="1797" height="832" alt="2" src="https://github.com/user-attachments/assets/e1b21d90-3899-450d-b5ff-ffd6e31e1173" />
 <img width="1803" height="825" alt="3" src="https://github.com/user-attachments/assets/a5737ecf-d259-446b-9d64-4ca9100883ae" />
