@@ -61,11 +61,8 @@
   .ss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
   /* LAYOUT */
-  .layout { display: grid; grid-template-columns: 180px 1fr; max-width: 1100px; margin: 0 auto; }
-  .toc-sticky { position: sticky; top: 60px; height: max-content; padding: 40px 0; border-right: 1px solid var(--gold-dim); }
-  .toc-sticky a { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); text-decoration: none; padding: 7px 20px 7px 0; border-right: 2px solid transparent; margin-right: -1px; transition: all 0.2s; }
-  .toc-sticky a:hover { color: var(--gold); border-right-color: var(--gold); }
-  .main-content { padding: 0 0 0 60px; }
+  .layout { display: block; max-width: 860px; margin: 0 auto; }
+  .main-content { padding: 0; }
 
   /* SECTION */
   .section { max-width: 860px; margin: 0 auto; padding: 80px 24px; }
@@ -125,8 +122,6 @@
 
   @media (max-width: 768px) {
     .layout { grid-template-columns: 1fr; }
-    .toc-sticky { display: none; }
-    .main-content { padding: 0; }
     .ss-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -167,7 +162,6 @@
 <div class="divider"></div>
 
 <div class="layout">
-  <nav class="toc-sticky" id="toc"></nav>
 
   <div class="main-content">
     <div class="md-content">
@@ -1170,21 +1164,6 @@ A: The BALANCE knob features a mandatory center snap — when turning from left 
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     obs.observe(el);
-  });
-
-  // Générer les ancres ET le menu automatiquement depuis les vrais titres H2
-  const toc = document.getElementById('toc');
-  document.querySelectorAll('.md-h2').forEach(h => {
-    // Générer l'ID depuis le texte du titre
-    const id = h.textContent.trim().toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    h.id = id;
-
-    // Ajouter le lien dans le menu
-    const a = document.createElement('a');
-    a.href = '#' + id;
-    a.textContent = h.textContent.trim().replace(/^[^\w]+/, '').trim();
-    toc.appendChild(a);
   });
 
   // Highlight du lien actif au scroll
