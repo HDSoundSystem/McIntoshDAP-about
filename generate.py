@@ -11,7 +11,7 @@ from pathlib import Path
 
 # ── Chemins ──────────────────────────────────────────────────────────────────
 ROOT     = Path(__file__).parent          # Racine du repo
-README   = ROOT / "README.md"
+README   = ROOT / "readme" / "README.md"
 TEMPLATE = ROOT / "template.html"
 DIST     = ROOT / "dist" / "about"
 DIST.mkdir(parents=True, exist_ok=True)
