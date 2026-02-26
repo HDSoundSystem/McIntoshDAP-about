@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c8a951;
+    --gold-dim: rgba(200,169,81,0.25);
+    --blue: #00c3ff;
+    --blue-dim: rgba(0,195,255,0.15);
+    --green: #00e676;
+    --bg: #000;
+    --bg2: #080808;
+    --bg3: #0e0e0e;
+    --text: #e8e0d0;
+    --text-dim: rgba(232,224,208,0.45);
+    --mono: 'Inconsolata', monospace;
+    --serif: 'Playfair Display', serif;
+    --light-serif: 'Cormorant Garamond', serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--mono); font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+
+  /* BANNER */
+  .hero-banner { width: 100%; max-height: 260px; overflow: hidden; position: relative; }
+  .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.7) contrast(1.1); }
+  .hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%); }
+
+  /* HERO */
+  .hero { text-align: center; padding: 60px 24px 80px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(32px, 6vw, 68px); font-weight: 700; line-height: 1.1; color: #fff; opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards; }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero-sub { font-family: var(--light-serif); font-size: clamp(14px, 2vw, 18px); font-style: italic; color: var(--text-dim); max-width: 600px; margin: 20px auto 0; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; }
+  .badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards; }
+  .badge { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; border: 1px solid; border-radius: 2px; }
+  .badge-green { border-color: var(--green); color: var(--green); }
+  .badge-blue  { border-color: var(--blue);  color: var(--blue);  }
+  .badge-gold  { border-color: var(--gold);  color: var(--gold);  }
+
+  /* DIVIDER */
+  .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.4; }
+
+  /* SCREENSHOTS */
+  .screenshots { padding: 60px 24px; display: flex; flex-direction: column; gap: 16px; max-width: 1200px; margin: 0 auto; }
+  .ss-full img, .screenshots img { width: 100%; border-radius: 4px; border: 1px solid var(--gold-dim); display: block; filter: brightness(0.92); transition: border-color 0.3s, filter 0.3s; }
+  .ss-full img:hover, .screenshots img:hover { border-color: var(--gold); filter: brightness(1); }
+  .ss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 180px 1fr; max-width: 1100px; margin: 0 auto; }
+  .toc-sticky { position: sticky; top: 60px; height: max-content; padding: 40px 0; border-right: 1px solid var(--gold-dim); }
+  .toc-sticky a { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); text-decoration: none; padding: 7px 20px 7px 0; border-right: 2px solid transparent; margin-right: -1px; transition: all 0.2s; }
+  .toc-sticky a:hover { color: var(--gold); border-right-color: var(--gold); }
+  .main-content { padding: 0 0 0 60px; }
+
+  /* SECTION */
+  .section { max-width: 860px; margin: 0 auto; padding: 80px 24px; }
+
+  /* MARKDOWN CONTENT STYLES */
+  .md-content { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .md-h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 400;
+    color: #fff;
+    margin: 60px 0 20px;
+    line-height: 1.2;
+    padding-top: 40px;
+    border-top: 1px solid var(--gold-dim);
+  }
+  .md-h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+  .md-h4 { font-family: var(--mono); font-size: 12px; letter-spacing: 1px; color: var(--blue); margin: 24px 0 10px; }
+  .md-p { color: var(--text-dim); margin-bottom: 16px; font-size: 14px; }
+  .md-ul, .md-ol { list-style: none; margin: 0 0 20px; display: flex; flex-direction: column; gap: 6px; }
+  .md-li { font-size: 13px; color: var(--text-dim); padding-left: 18px; position: relative; }
+  .md-ul .md-li::before { content: '—'; position: absolute; left: 0; color: var(--gold); opacity: 0.6; }
+  .md-ol { counter-reset: ol; }
+  .md-ol .md-li { counter-increment: ol; }
+  .md-ol .md-li::before { content: counter(ol, decimal-leading-zero); position: absolute; left: 0; font-size: 10px; color: var(--gold); }
+  .md-pre { background: var(--bg3); border: 1px solid var(--gold-dim); border-left: 3px solid var(--gold); padding: 20px 24px; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--blue); overflow-x: auto; margin: 20px 0; border-radius: 2px; }
+  .md-blockquote { border-left: 3px solid var(--gold); padding: 12px 20px; background: rgba(200,169,81,0.04); margin: 20px 0; color: var(--text-dim); font-style: italic; }
+  .md-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .md-table th { background: rgba(200,169,81,0.08); color: var(--gold); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px; border: 1px solid var(--gold-dim); text-align: left; }
+  .md-table td { padding: 10px 14px; border: 1px solid var(--gold-dim); color: var(--text-dim); }
+  .md-table tr:hover td { background: rgba(200,169,81,0.03); }
+  code { font-family: var(--mono); font-size: 12px; color: var(--blue); background: var(--blue-dim); padding: 2px 6px; border-radius: 2px; }
+  pre code { background: none; padding: 0; color: inherit; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { color: var(--gold); }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--gold); }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 60px 24px 80px; }
+  footer::before { content: ''; display: block; width: 60px; height: 1px; background: var(--gold); margin: 0 auto 32px; opacity: 0.5; }
+  .footer-logo { font-family: var(--serif); font-size: 28px; font-style: italic; color: var(--gold); margin-bottom: 12px; }
+  .footer-tagline { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .toc-sticky { display: none; }
+    .main-content { padding: 0; }
+    .ss-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero-banner">
+  <img src="{{BANNER_IMG}}" alt="McIntosh DAP Banner">
+</div>
+
+<section class="hero">
+  <p class="hero-eyebrow">Fan-made Tribute Project · Open Source</p>
+  <h1>{{TITLE}}</h1>
+  <p class="hero-sub">{{SUBTITLE}}</p>
+  <div class="badges">
+    {{BADGES}}
+  </div>
+</section>
+
+<div class="screenshots">
+  {{SCREENSHOTS}}
+</div>
+
+<div class="divider"></div>
+
+<div class="layout">
+  <nav class="toc-sticky">
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#installation">Installation</a>
+    <a href="#configuration">Configuration</a>
+    <a href="#contributing">Contributing</a>
+    <a href="#license">License</a>
+    <a href="#credits">Credits</a>
+  </nav>
+
+  <div class="main-content">
+    <div class="md-content">
+      {{CONTENT}}
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">McIntosh DAP</div>
+  <p class="footer-tagline">Made with ❤️ for audio enthusiasts everywhere</p>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = 1;
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.md-h2').forEach(el => {
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    obs.observe(el);
+  });
+
+  // Ancres automatiques sur les titres H2
+  document.querySelectorAll('.md-h2').forEach(h => {
+    const id = h.textContent.trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    h.id = id;
+  });
+</script>
+</body>
+</html>
