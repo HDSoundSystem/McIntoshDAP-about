@@ -139,7 +139,7 @@
   <div class="badges">
     <span class="badge badge-green">STATUS: ACTIVE</span>
 <span class="badge badge-green">LICENSE: MIT</span>
-<span class="badge badge-blue">VERSION: 3.1</span>
+<span class="badge badge-blue">VERSION: 3.1.5</span>
 
   </div>
 </section>
@@ -411,14 +411,16 @@
 </ul>
 <h3 id="advanced-features">⚙️ Advanced Features</h3>
 <h4 id="web-audio-api-processing">Web Audio API Processing</h4>
-<p class="md-p">Professional audio graph with:<br />
-- <strong>MediaElementSourceNode</strong>: Audio input source<br />
-- <strong>StereoPanner</strong>: Balance control<br />
-- <strong>Two BiquadFilter Nodes</strong>: Bass/treble tone controls<br />
-- <strong>Ten BiquadFilter Nodes</strong>: 10-band graphic equalizer (Peaking type)<br />
-- <strong>ChannelSplitter</strong>: Channel separation for analysis<br />
-- <strong>Two AnalyserNode</strong>: VU meter visualization<br />
-- <strong>AudioDestination</strong>: Final audio output</p>
+<p class="md-p">Professional audio graph with:</p>
+<ul class="md-ul">
+<li class="md-li"><strong>MediaElementSourceNode</strong>: Audio input source</li>
+<li class="md-li"><strong>StereoPanner</strong>: Balance control</li>
+<li class="md-li"><strong>Two BiquadFilter Nodes</strong>: Bass/treble tone controls</li>
+<li class="md-li"><strong>Ten BiquadFilter Nodes</strong>: 10-band graphic equalizer (Peaking type)</li>
+<li class="md-li"><strong>ChannelSplitter</strong>: Channel separation for analysis</li>
+<li class="md-li"><strong>Two AnalyserNode</strong>: VU meter visualization</li>
+<li class="md-li"><strong>AudioDestination</strong>: Final audio output</li>
+</ul>
 <h4 id="progressive-web-app-pwa">Progressive Web App (PWA)</h4>
 <ul class="md-ul">
 <li class="md-li"><strong>Service Worker</strong>: Offline cache for static resources</li>
@@ -559,16 +561,18 @@ AudioDestinationNode (Speakers)
   eqBands: Array,                   // [32, 64, 125, 250, 500, 1k, 2k, 4k, 8k, 16k]
 }
 </code></pre>
-<p class="md-p"><strong>Core Methods</strong>:<br />
-- <code>init()</code>: Initialize audio context and graph<br />
-- <code>play()</code>: Start playback<br />
-- <code>pause()</code>: Pause playback<br />
-- <code>stop()</code>: Stop and reset<br />
-- <code>setVolume(val)</code>: Set volume (0-1)<br />
-- <code>setBalance(val)</code>: Set balance (-1 to +1)<br />
-- <code>updateEQ(bass, treble, loudness)</code>: Update tone filters<br />
-- <code>setCustomFilter(freq, gain)</code>: Set EQ band gain<br />
-- <code>getLevels()</code>: Return audio levels {left, right}</p>
+<p class="md-p"><strong>Core Methods</strong>:</p>
+<ul class="md-ul">
+<li class="md-li"><code>init()</code>: Initialize audio context and graph</li>
+<li class="md-li"><code>play()</code>: Start playback</li>
+<li class="md-li"><code>pause()</code>: Pause playback</li>
+<li class="md-li"><code>stop()</code>: Stop and reset</li>
+<li class="md-li"><code>setVolume(val)</code>: Set volume (0-1)</li>
+<li class="md-li"><code>setBalance(val)</code>: Set balance (-1 to +1)</li>
+<li class="md-li"><code>updateEQ(bass, treble, loudness)</code>: Update tone filters</li>
+<li class="md-li"><code>setCustomFilter(freq, gain)</code>: Set EQ band gain</li>
+<li class="md-li"><code>getLevels()</code>: Return audio levels {left, right}</li>
+</ul>
 <h3 id="modular-components">Modular Components</h3>
 <h4 id="1-component-loader-component-loaderjs">1. Component Loader (component-loader.js)</h4>
 <p class="md-p"><strong>Role</strong>: Dynamically loads HTML components into main page</p>
@@ -591,11 +595,13 @@ components.forEach(async comp =&gt; {
 // Event triggered when all components are loaded
 document.dispatchEvent(new Event('componentsLoaded'));
 </code></pre>
-<p class="md-p"><strong>Benefits</strong>:<br />
-- Separation of concerns<br />
-- Improved maintainability<br />
-- Asynchronous loading<br />
-- Component reusability</p>
+<p class="md-p"><strong>Benefits</strong>:</p>
+<ul class="md-ul">
+<li class="md-li">Separation of concerns</li>
+<li class="md-li">Improved maintainability</li>
+<li class="md-li">Asynchronous loading</li>
+<li class="md-li">Component reusability</li>
+</ul>
 <h4 id="2-main-script-scriptjs">2. Main Script (script.js)</h4>
 <p class="md-p"><strong>Role</strong>: Orchestrates all application logic</p>
 <p class="md-p"><strong>Structure</strong>:</p>
@@ -632,13 +638,15 @@ function updateVUMeters() { /* ... */ }
 function applyLoudnessEffect() { /* ... */ }
 // ... etc
 </code></pre>
-<p class="md-p"><strong>Responsibilities</strong>:<br />
-- Playlist management<br />
-- Playback controls<br />
-- Interface updates<br />
-- VU meter animation<br />
-- Metadata handling<br />
-- Playback modes (repeat, random, A-B)</p>
+<p class="md-p"><strong>Responsibilities</strong>:</p>
+<ul class="md-ul">
+<li class="md-li">Playlist management</li>
+<li class="md-li">Playback controls</li>
+<li class="md-li">Interface updates</li>
+<li class="md-li">VU meter animation</li>
+<li class="md-li">Metadata handling</li>
+<li class="md-li">Playback modes (repeat, random, A-B)</li>
+</ul>
 <h4 id="3-electron-main-mainjs">3. Electron Main (main.js)</h4>
 <p class="md-p"><strong>Role</strong>: Electron application entry point</p>
 <p class="md-p"><strong>Features</strong>:</p>
